@@ -1,5 +1,3 @@
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
-
 # Copyright 2010 United States Government as represented by the
 # Administrator of the National Aeronautics and Space Administration.
 # Copyright 2011 Justin Santa Barbara
@@ -84,7 +82,7 @@ class FixedIntervalLoopingCall(LoopingCallBase):
                         LOG.warn(_('task run outlasted interval by %s sec') %
                                  -delay)
                     greenthread.sleep(delay if delay > 0 else 0)
-            except LoopingCallDone, e:
+            except LoopingCallDone as e:
                 self.stop()
                 done.send(e.retvalue)
             except Exception:
@@ -131,7 +129,7 @@ class DynamicLoopingCall(LoopingCallBase):
                     LOG.debug(_('Dynamic looping call sleeping for %.02f '
                                 'seconds'), idle)
                     greenthread.sleep(idle)
-            except LoopingCallDone, e:
+            except LoopingCallDone as e:
                 self.stop()
                 done.send(e.retvalue)
             except Exception:

@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+# Copyright (c) 2013 Hewlett-Packard Development Company, L.P.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,34 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# THIS FILE IS MANAGED BY THE GLOBAL REQUIREMENTS REPO - DO NOT EDIT
 import setuptools
 
-from interceptor.openstack.common import setup
-
-requires = setup.parse_requirements()
-depend_links = setup.parse_dependency_links()
-project = 'interceptor'
-
-
 setuptools.setup(
-    name=project,
-    version=setup.get_version(project, '2013.5'),
-    description='Building a better rocket...',
-    license='Apache License (2.0)',
-    author='m4dcoder',
-    author_email='m4d.coder@gmail.com',
-    url='http://interceptor.openstack.org/',
-    cmdclass=setup.get_cmdclass(),
-    packages=setuptools.find_packages(exclude=['bin']),
-    include_package_data=True,
-    install_requires=requires,
-    dependency_links=depend_links,
-    classifiers=[
-        'Development Status :: 4 - Beta',
-        'License :: OSI Approved :: Apache Software License',
-        'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python :: 2.6',
-        'Environment :: No Input/Output (Daemon)',
-    ],
-    scripts=['bin/interceptor'],
-    py_modules=[])
+    setup_requires=['pbr'],
+    pbr=True)
