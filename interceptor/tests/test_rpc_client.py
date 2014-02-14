@@ -12,31 +12,53 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import eventlet
+eventlet.monkey_patch()
+
 import time
 import testtools
+
+from oslo import messaging
 from oslo.config import cfg
+
 from interceptor.openstack.common import context
-from interceptor.rpc import client as rpc_client
+from interceptor.engine.v1 import service as engine
+from interceptor.engine.v1 import client as rpc_client
 
 
 class RpcClientTestCase(testtools.TestCase):
 
-    def setUp(self):
-        # init config
+    def get_transport(self):
+        # get transport manually, oslo.messaging get_transport is broken
+        from stevedore import driver
+        from oslo.messaging import transport
+        messaging.get_transport(cfg.CONF)
         cfg.CONF.set_default('verbose', True)
-        cfg.CONF.set_default('rpc_backend',
-                             'interceptor.openstack.common.rpc.impl_fake')
+        cfg.CONF.set_default('rpc_backend', 'fake')
+        url = transport.TransportURL.parse(cfg.CONF, None, None)
+        kwargs = dict(default_exchange=cfg.CONF.control_exchange,
+                      allowed_remote_exmods=[])
+        mgr = driver.DriverManager('oslo.messaging.drivers',
+                                   url.transport,
+                                   invoke_on_load=True,
+                                   invoke_args=[cfg.CONF, url],
+                                   invoke_kwds=kwargs)
+        return transport.Transport(mgr.driver)
+
+    def setUp(self):
+        # init configuration
         cfg_grp = cfg.OptGroup(name='engine', title='Engine options')
-        opts = [cfg.IntOpt('periodic_interval', default=60),
-                cfg.StrOpt('host', default='localhost'),
+        opts = [cfg.StrOpt('host', default='localhost'),
                 cfg.StrOpt('topic', default='engine')]
         cfg.CONF.register_group(cfg_grp)
         cfg.CONF.register_opts(opts, group=cfg_grp)
 
         # start server
-        from interceptor.engine import service as engine
-        engine_conf = cfg.CONF.engine
-        self.server = engine.EngineService(engine_conf.host, engine_conf.topic)
+        transport = self.get_transport()
+        target = messaging.Target(topic='engine', server='localhost')
+        endpoints = [engine.EngineServer()]
+        self.server = messaging.get_rpc_server(transport, target,
+                                               endpoints, executor='eventlet')
         self.server.start()
 
         # upcall
@@ -51,7 +73,8 @@ class RpcClientTestCase(testtools.TestCase):
         super(RpcClientTestCase, self).tearDown()
 
     def test_ping(self):
-        client = rpc_client.EngineClient()
+        transport = self.server.transport
+        client = rpc_client.EngineClient(transport)
         start_time = time.time()
         echo = client.ping(context.RequestContext())
         end_time = time.time()

@@ -1,5 +1,6 @@
-# Copyright 2011 OpenStack Foundation.
-# All Rights Reserved.
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
+
+# Copyright 2012-2013 Red Hat, Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -13,9 +14,4 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-NOTIFICATIONS = []
-
-
-def notify(_context, message):
-    """Test notifier, stores notifications in memory for unittests."""
-    NOTIFICATIONS.append(message)
+VERSION = '1.0'

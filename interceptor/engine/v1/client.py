@@ -1,5 +1,6 @@
-# Copyright 2011 OpenStack Foundation.
-# All Rights Reserved.
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
+
+# Copyright 2012-2013 Red Hat, Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -13,25 +14,29 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from oslo import messaging
 from oslo.config import cfg
 
-from interceptor.openstack.common import jsonutils
+from interceptor.engine import v1
 from interceptor.openstack.common import log as logging
 
 
-CONF = cfg.CONF
+logger = logging.getLogger(__name__)
 
 
-def notify(_context, message):
-    """Notifies the recipient of the desired event given the model.
-
-    Log notifications using OpenStack's default logging system.
+class EngineClient(object):
+    """
+    Client side of the engine rpc API.
     """
 
-    priority = message.get('priority',
-                           CONF.default_notification_level)
-    priority = priority.lower()
-    logger = logging.getLogger(
-        'interceptor.openstack.common.notification.%s' %
-        message['event_type'])
-    getattr(logger, priority)(jsonutils.dumps(message))
+    def __init__(self, transport):
+        target = messaging.Target(topic=cfg.CONF.engine.topic,
+                                  version=v1.VERSION)
+        self._client = messaging.RPCClient(transport, target)
+
+    def ping(self, cntx):
+        """
+        Returns status object if service is healthy
+        :param context: RPC context
+        """
+        return self._client.call(cntx, 'ping')

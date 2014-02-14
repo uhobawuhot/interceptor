@@ -17,8 +17,11 @@ import wsmeext.pecan
 import pecan
 from pecan.core import request
 
+from oslo import messaging
+from oslo.config import cfg
+
 from interceptor.model import health
-from interceptor.rpc import client as rpc_client
+from interceptor.engine.v1 import client as rpc_client
 from interceptor.openstack.common import log as logging
 
 
@@ -34,7 +37,8 @@ class ApplicationController(object):
 
     @wsmeext.pecan.wsexpose(health.PingResponse)
     def ping(self):
-        client = rpc_client.EngineClient()
+        transport = messaging.get_transport(cfg.CONF)
+        client = rpc_client.EngineClient(transport)
         echo = client.ping(request.context)
         response = health.PingResponse(**echo)
         return response

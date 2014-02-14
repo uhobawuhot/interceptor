@@ -1,5 +1,6 @@
-# Copyright 2011 OpenStack Foundation.
-# All Rights Reserved.
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
+
+# Copyright 2012-2013 Red Hat, Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -13,7 +14,24 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from wsme.rest import json
 
-def notify(_context, message):
-    """Notifies the recipient of the desired event given the model."""
-    pass
+from oslo import messaging
+
+from interceptor.engine import v1
+from interceptor.model import health
+from interceptor.openstack.common import log as logging
+
+
+logger = logging.getLogger(__name__)
+
+
+class EngineServer(object):
+
+    target = messaging.Target(version=v1.VERSION)
+
+    def ping(self, cntx):
+        """
+        Returns status object if service is healthy and responding
+        """
+        return json.tojson(health.PingResponse, health.PingResponse())

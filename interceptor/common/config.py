@@ -42,15 +42,15 @@ def register_opts_for_engine():
     cfg_grp = cfg.OptGroup(name=cfg_grp_name, title='Engine options')
 
     # define options
-    opts = [cfg.IntOpt('periodic_interval', default=60,
-                       help='seconds between running periodic tasks'),
-            cfg.StrOpt('host', default=socket.gethostname(),
+    opts = [cfg.StrOpt('host', default=socket.gethostname(),
                        help='Name of the engine node. '
                             'This can be an opaque identifier. '
                             'It is not necessarily a hostname, '
                             'FQDN, or IP address.'),
             cfg.StrOpt('topic', default='engine',
-                       help='The message topic that the engine listens on.')]
+                       help='The message topic that the engine listens on.'),
+            cfg.StrOpt('version', default='1.0',
+                       help='The version of the engine.')]
 
     # register the group and options
     cfg.CONF.register_group(cfg_grp)
@@ -73,36 +73,3 @@ def register_opts_for_api():
     # register the group and options
     cfg.CONF.register_group(cfg_grp)
     cfg.CONF.register_opts(opts, group=cfg_grp)
-
-
-def register_opts_for_data():
-    """Register configuration options for the data group."""
-
-    # define group name
-    cfg_grp_name = 'data'
-
-    # define group
-    cfg_grp = cfg.OptGroup(name=cfg_grp_name, title='Data backend options')
-
-    # define options
-    opts = [cfg.ListOpt('providers', default=[]),
-            cfg.StrOpt('default', default=None)]
-
-    # register the group and options
-    cfg.CONF.register_group(cfg_grp)
-    cfg.CONF.register_opts(opts, group=cfg_grp)
-
-    # validate provider options
-    if (cfg.CONF.data.default and
-            cfg.CONF.data.default not in cfg.CONF.data.providers):
-        raise Exception('Default provider is not recognized.')
-
-    # register each available providers
-    for provider in cfg.CONF.data.providers:
-        cfg_provider = cfg.OptGroup(name=provider)
-        opts = [cfg.StrOpt('plugin', required=True),
-                cfg.StrOpt('username', default=None),
-                cfg.StrOpt('password', secret=True, default=None),
-                cfg.DictOpt('attributes', default={})]
-        cfg.CONF.register_group(cfg_provider)
-        cfg.CONF.register_opts(opts, group=cfg_provider)
