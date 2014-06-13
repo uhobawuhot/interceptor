@@ -13,7 +13,6 @@
 #    under the License.
 
 from wsme.rest import json
-
 from oslo import messaging
 
 from interceptor.engine import v1
@@ -29,7 +28,5 @@ class EngineServer(object):
     target = messaging.Target(version=v1.VERSION)
 
     def ping(self, cntx):
-        """
-        Returns status object if service is healthy and responding
-        """
+        """Returns status object if service is healthy and responding."""
         return json.tojson(health.PingResponse, health.PingResponse())

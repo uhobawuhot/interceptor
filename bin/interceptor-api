@@ -24,7 +24,6 @@ which then calls into this engine.
 import eventlet
 eventlet.monkey_patch()
 
-
 import os
 import sys
 
@@ -36,21 +35,18 @@ POSSIBLE_TOPDIR = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
 if os.path.exists(os.path.join(POSSIBLE_TOPDIR, 'interceptor', '__init__.py')):
     sys.path.insert(0, POSSIBLE_TOPDIR)
 
+from wsgiref import simple_server
 
 from oslo.config import cfg
+
 from interceptor.common import config
 from interceptor.openstack.common import log as logging
 from interceptor.api import app
-from wsgiref import simple_server
 
 
 if __name__ == '__main__':
-
-    cfg.CONF(project='interceptor', prog='interceptor-api')
-    config.register_opts_for_engine()
-    config.register_opts_for_api()
+    config.parse_args()
     logging.setup('interceptor')
-
     root = app.Application()
     host, port = cfg.CONF.api.host, cfg.CONF.api.port
     server = simple_server.make_server(host, port, root)

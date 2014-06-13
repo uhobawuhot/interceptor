@@ -19,13 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class classproperty(property):
-    """
-    Class decorator to implement a property for the class (not class instance)
+    """Class decorator to implement a property for the class."""
 
-    Usage:
-    @classproperty
-    def some_property(cls):
-        return some_value
-    """
     def __get__(self, cls, owner):
         return classmethod(self.fget).__get__(None, owner)()

@@ -8,6 +8,7 @@
 *.egg-info
 dist
 build
+.venv
 eggs
 parts
 var
@@ -33,9 +34,3 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-
-# local app configs
-*.local.*
-*.local*.*
-*_local.*
-*_local*.*

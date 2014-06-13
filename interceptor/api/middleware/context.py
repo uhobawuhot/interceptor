@@ -13,6 +13,7 @@
 #    under the License.
 
 from pecan.core import request
+
 from interceptor.openstack.common import context
 from interceptor.openstack.common import importutils
 from interceptor.openstack.common import log as logging

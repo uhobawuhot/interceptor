@@ -12,7 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from pbr import version
 
-from interceptor.openstack.common import version as common_version
-
-version_info = common_version.VersionInfo('interceptor')
+version_info = version.VersionInfo('interceptor')
+version_string = version_info.version_string

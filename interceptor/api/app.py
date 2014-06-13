@@ -14,8 +14,8 @@
 
 import pecan
 from oslo.config import cfg
+
 from interceptor.api import config as api_config
-from interceptor.openstack.common.middleware import context
 from interceptor.openstack.common import log as logging
 
 
@@ -41,8 +41,6 @@ def setup_app(pecan_config=None):
         debug=cfg.CONF.debug,
         force_canonical=getattr(pecan_config.app, 'force_canonical', True),
     )
-
-    app = context.ContextMiddleware(app)
 
     return app
 

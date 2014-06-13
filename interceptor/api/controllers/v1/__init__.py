@@ -12,11 +12,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import wsmeext.pecan
-
 import pecan
 from pecan.core import request
-
+import wsmeext.pecan
 from oslo import messaging
 from oslo.config import cfg
 
@@ -29,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 class ApplicationController(object):
-    """Root of version 1 API controller"""
+    """Root of version 1 API controller."""
 
     @pecan.expose(generic=True, template='index.html')
     def index(self):

@@ -12,12 +12,48 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import socket
 from oslo.config import cfg
+
 from interceptor.openstack.common import log as logging
+from interceptor import version
 
 
 logger = logging.getLogger(__name__)
+
+
+engine_opts = [
+    cfg.StrOpt('host',
+               default='0.0.0.0',
+               help='Name of the engine node. This can be an opaque '
+                    'identifier. It is not necessarily a hostname, '
+                    'FQDN, or IP address.'),
+    cfg.StrOpt('topic',
+               default='engine',
+               help='The message topic that the engine listens on.'),
+    cfg.StrOpt('version',
+               default='1.0',
+               help='The version of the engine.')
+]
+
+api_opts = [
+    cfg.StrOpt('host',
+               default='0.0.0.0',
+               help='API server host.'),
+    cfg.IntOpt('port',
+               default=8080,
+               help='API server port.')
+]
+
+cfg.CONF.register_opts(api_opts, group='api')
+cfg.CONF.register_opts(engine_opts, group='engine')
+
+
+def parse_args(args=None, usage=None, default_config_files=None):
+    cfg.CONF(args=args,
+             project='interceptor',
+             version=version,
+             usage=usage,
+             default_config_files=default_config_files)
 
 
 def get_config(option, group=None):
@@ -30,46 +66,3 @@ def get_config(option, group=None):
     return (getattr(cfg_grp, option)
             if cfg_grp and hasattr(cfg_grp, option)
             else None)
-
-
-def register_opts_for_engine():
-    """Register configuration options for the engine service."""
-
-    # define group name
-    cfg_grp_name = 'engine'
-
-    # define group
-    cfg_grp = cfg.OptGroup(name=cfg_grp_name, title='Engine options')
-
-    # define options
-    opts = [cfg.StrOpt('host', default=socket.gethostname(),
-                       help='Name of the engine node. '
-                            'This can be an opaque identifier. '
-                            'It is not necessarily a hostname, '
-                            'FQDN, or IP address.'),
-            cfg.StrOpt('topic', default='engine',
-                       help='The message topic that the engine listens on.'),
-            cfg.StrOpt('version', default='1.0',
-                       help='The version of the engine.')]
-
-    # register the group and options
-    cfg.CONF.register_group(cfg_grp)
-    cfg.CONF.register_opts(opts, group=cfg_grp)
-
-
-def register_opts_for_api():
-    """Register configuration options for the API group."""
-
-    # define group name
-    cfg_grp_name = 'api'
-
-    # define group
-    cfg_grp = cfg.OptGroup(name=cfg_grp_name, title='API server options')
-
-    # define options
-    opts = [cfg.StrOpt('host', default='0.0.0.0'),
-            cfg.IntOpt('port', default=8080)]
-
-    # register the group and options
-    cfg.CONF.register_group(cfg_grp)
-    cfg.CONF.register_opts(opts, group=cfg_grp)

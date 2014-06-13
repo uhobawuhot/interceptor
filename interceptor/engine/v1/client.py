@@ -23,9 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 class EngineClient(object):
-    """
-    Client side of the engine rpc API.
-    """
+    """Client side of the engine rpc API."""
 
     def __init__(self, transport):
         target = messaging.Target(topic=cfg.CONF.engine.topic,
@@ -33,8 +31,8 @@ class EngineClient(object):
         self._client = messaging.RPCClient(transport, target)
 
     def ping(self, cntx):
-        """
-        Returns status object if service is healthy
+        """Returns status object if service is healthy.
+
         :param context: RPC context
         """
         return self._client.call(cntx, 'ping')

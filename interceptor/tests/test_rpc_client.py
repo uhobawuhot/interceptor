@@ -16,8 +16,8 @@ import eventlet
 eventlet.monkey_patch()
 
 import time
-import testtools
 
+import testtools
 from oslo import messaging
 from oslo.config import cfg
 
